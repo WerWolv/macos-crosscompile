@@ -2,7 +2,7 @@ FROM ubuntu:25.04
 
 ENV PATH                $PATH:/osxcross/target/bin
 ENV LD_LIBRARY_PATH     /osxcross/target/lib
-ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX14.0.sdk
+ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX15.0.sdk
 ENV OSXCROSS_TARGET     darwin23
 ENV OSXCROSS_TARGET_DIR /osxcross/target
 ENV OSXCROSS_HOST       aarch64-apple-darwin23
@@ -17,9 +17,9 @@ RUN --mount=type=cache,target=/var/lib/apt/lists/ export DEBIAN_FRONTEND=noninte
     apt -y install lsb-release build-essential python3 python3-pip git wget zip unzip pkg-config curl ninja-build software-properties-common gnupg libssl-dev ccache
 
 # Install clang 20
-RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 20 &&\
-    ln -s /usr/bin/clang-20 /usr/bin/clang &&\
-    ln -s /usr/bin/clang++-20 /usr/bin/clang++
+RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 21 &&\
+    ln -s /usr/bin/clang-21 /usr/bin/clang &&\
+    ln -s /usr/bin/clang++-21 /usr/bin/clang++
 
 # Install vcpkg
 RUN cd / &&\
@@ -42,8 +42,8 @@ EOF
 RUN --mount=type=cache,target=/cache <<EOF
 ## Download SDK
 set -xe
-wget https://github.com/joseluisq/macosx-sdks/releases/download/14.0/MacOSX14.0.sdk.tar.xz -O /cache/MacOSX14.0.sdk.tar.xz -nc || true
-cp /cache/MacOSX14.0.sdk.tar.xz /osxcross/tarballs
+wget https://github.com/joseluisq/macosx-sdks/releases/download/15.0/MmacacOSX15.0.sdk.tar.xz -O /cache/MacOSX15.0.sdk.tar.xz -nc || true
+cp /cache/MacOSX15.0.sdk.tar.xz /osxcross/tarballs
 EOF
 
 # Init stuff
@@ -57,13 +57,13 @@ COPY arm-osx-mytriplet.cmake /vcpkg/triplets/community
 ARG JOBS 1
 
 # Install osxcross
-## Build cross-compiler clang-20
+## Build cross-compiler clang-21
 RUN --mount=type=cache,target=/cache <<EOF
     set -xe
     ccache -zs
     
     cd /osxcross
-    UNATTENDED=1 CC=/usr/lib/ccache/clang-20 CXX=/usr/lib/ccache/clang++-20 ./build.sh
+    UNATTENDED=1 CC=/usr/lib/ccache/clang-21 CXX=/usr/lib/ccache/clang++-21 ./build.sh
     
     ccache -s
 EOF
