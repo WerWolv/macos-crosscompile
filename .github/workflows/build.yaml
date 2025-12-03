@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Make repo owner lowercase
+        run: echo "REPO_OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
         
       - name: Log into GHCR
         uses: docker/login-action@v3
@@ -31,4 +34,5 @@ jobs:
           file: crosscompile/Dockerfile
           push: true
           tags: |
-              ghcr.io/${{ github.repository_owner }}/macos-crosscompile:${{ github.sha }}
+            ghcr.io/${{ env.REPO_OWNER_LC }}/macos-crosscompile:${{ github.sha }}
+            ghcr.io/${{ env.REPO_OWNER_LC }}/macos-crosscompile:latest
