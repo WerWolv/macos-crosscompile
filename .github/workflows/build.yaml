@@ -16,10 +16,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Convert repo string to lowercase
-        run: echo "REPO_LOWER_CASE=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
+        
       - name: Log into GHCR
         uses: docker/login-action@v3
         with:
@@ -27,10 +24,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: |
-          docker build -f crosscompile/Dockerfile -t ghcr.io/${REPO_LOWER_CASE}:latest ./crosscompile
-
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${REPO_LOWER_CASE}:latest
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: crosscompile/Dockerfile
+          push: true
+          tags: |
+              ghcr.io/${{ github.repository_owner }}/macos-crosscompile:${{ github.sha }}
