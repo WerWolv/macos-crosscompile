@@ -33,4 +33,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${REPO_LOWER_CASE}/image:latest
+          docker push ghcr.io/${REPO_LOWER_CASE}:latest
